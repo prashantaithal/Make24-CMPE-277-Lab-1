@@ -7,7 +7,7 @@
             android:icon="@drawable/ic_check"
             android:title="@string/solution" />
         <item
-            android:id="@+id/pi"
+            android:id="@+id/assignNumber"
             android:icon="@drawable/ic_apps"
             android:title="@string/pick" />
     </group>

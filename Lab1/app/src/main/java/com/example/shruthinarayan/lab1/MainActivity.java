@@ -1,23 +1,23 @@
 package com.example.shruthinarayan.lab1;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.content.Intent;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
 import java.util.Stack;
 import java.lang.String;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, NumberPicker.OnValueChangeListener {
     //Button
     private Button one;
     private Button two;
@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView show_timer;
     Thread timer;
 
+    static Dialog d ;
 
     private android.support.v4.widget.DrawerLayout mDrawerLayout;
 
@@ -79,18 +80,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         // set item as selected to persist highlight
                         menuItem.setChecked(true);
+                        // close drawer when item is tapped
+                        mDrawerLayout.closeDrawers();
+
                         switch (menuItem.getItemId()) {
                             case R.id.sol:
-                             //   newGame();
+                                AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
+                                MakeNumber obj = new MakeNumber();
+                                String answer = obj.getSolution(Integer.parseInt(bt_one),Integer.parseInt(bt_two), Integer.parseInt(bt_three), Integer.parseInt(bt_four));
+                                Log.d("TAG", "ans" + answer);
+                                if(answer != null) {
+                                    builder1.setMessage("" + answer);
+                                }
+                                else {
+                                    builder1.setMessage("Sorry, unable to solve.Try another set of numbers.");
+                                }
+                                builder1.setCancelable(true);
+
+                                builder1.setPositiveButton(
+                                        "OK",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.cancel();
+                                            }
+                                        });
+                                AlertDialog alert11 = builder1.create();
+                                alert11.show();
                                 return true;
-                            case R.id.pi:
-                               // showHelp();
+                            case R.id.assignNumber:
+                                dialogShow();
                                 return true;
                             default:
                                  mDrawerLayout.closeDrawers();
                         }
-                        // close drawer when item is tapped
-                       // mDrawerLayout.closeDrawers();
+
 
                         // Add code here to update the UI based on the item selected
                         // For example, swap UI fragments here
@@ -216,7 +239,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             .setPositiveButton("Next Puzzle", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    ///补全统计数据
                                     OperateSum="";
                                     showtext.setText(OperateSum);
                                     resetNumber();
@@ -262,10 +284,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         two.setEnabled(true);
         three.setEnabled(true);
         four.setEnabled(true);
-
-        MakeNumber obj = new MakeNumber();
-        String answer = obj.getSolution(numberStore[0], numberStore[1], numberStore[2], numberStore[3]);
-        Log.d("TAG", "ans" + answer);
     }
 
     private void randomGenerator(int min, int max){
@@ -428,6 +446,76 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             st.push(calc(st.pop(), st.pop(), op.pop()));
         }
         return st.peek() == 24;
+    }
+
+    @Override
+    public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+        Log.i("value is",""+i1);
+
+    }
+    public void dialogShow()
+    {
+        final Dialog d = new Dialog(MainActivity.this);
+        d.setTitle("NumberPicker");
+        d.setContentView(R.layout.dialog);
+        Button b1 = (Button) d.findViewById(R.id.button1);
+        Button b2 = (Button) d.findViewById(R.id.button2);
+        final NumberPicker np1 = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        final NumberPicker np2 = (NumberPicker) d.findViewById(R.id.numberPicker2);
+        final NumberPicker np3 = (NumberPicker) d.findViewById(R.id.numberPicker3);
+        final NumberPicker np4 = (NumberPicker) d.findViewById(R.id.numberPicker4);
+
+        np1.setMaxValue(9);
+        np1.setMinValue(1);
+        np1.setWrapSelectorWheel(false);
+        np1.setOnValueChangedListener(this);
+
+        np2.setMaxValue(9);
+        np2.setMinValue(1);
+        np2.setWrapSelectorWheel(false);
+        np2.setOnValueChangedListener(this);
+
+        np3.setMaxValue(9);
+        np3.setMinValue(1);
+        np3.setWrapSelectorWheel(false);
+        np3.setOnValueChangedListener(this);
+
+        np4.setMaxValue(9);
+        np4.setMinValue(1);
+        np4.setWrapSelectorWheel(false);
+        np4.setOnValueChangedListener(this);
+        b1.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                bt_one = Integer.toString(np1.getValue());
+                bt_two = Integer.toString(np2.getValue());
+                bt_three = Integer.toString(np3.getValue());
+                bt_four = Integer.toString(np4.getValue());
+
+                one.setText(bt_one);
+                two.setText(bt_two);
+                three.setText(bt_three);
+                four.setText(bt_four);
+
+                OperateSum="";
+                showtext.setText(OperateSum);
+                one.setEnabled(true);
+                two.setEnabled(true);
+                three.setEnabled(true);
+                four.setEnabled(true);
+
+                d.dismiss();
+            }
+        });
+        b2.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                d.dismiss();
+            }
+        });
+        d.show();
     }
 
 }
