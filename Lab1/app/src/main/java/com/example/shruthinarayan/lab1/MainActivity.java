@@ -79,6 +79,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         // set item as selected to persist highlight
                         menuItem.setChecked(true);
+                        switch (menuItem.getItemId()) {
+                            case R.id.sol:
+                             //   newGame();
+                                return true;
+                            case R.id.pi:
+                               // showHelp();
+                                return true;
+                            default:
+                                 mDrawerLayout.closeDrawers();
+                        }
                         // close drawer when item is tapped
                        // mDrawerLayout.closeDrawers();
 
