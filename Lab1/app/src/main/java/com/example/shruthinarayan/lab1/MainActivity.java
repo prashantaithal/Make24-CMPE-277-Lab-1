@@ -252,6 +252,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         two.setEnabled(true);
         three.setEnabled(true);
         four.setEnabled(true);
+
+        MakeNumber obj = new MakeNumber();
+        String answer = obj.getSolution(numberStore[0], numberStore[1], numberStore[2], numberStore[3]);
+        Log.d("TAG", "ans" + answer);
     }
 
     private void randomGenerator(int min, int max){
