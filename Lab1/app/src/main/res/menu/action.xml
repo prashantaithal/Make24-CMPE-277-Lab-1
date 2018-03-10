@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/clr"
+        android:title="@string/clear"
+        android:icon="@drawable/ic_clear"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/ff"
+        android:title="@string/fast"
+        android:icon="@drawable/ic_fast_forward"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/mv"
+        android:title="@string/move"
+        android:icon="@drawable/ic_more_vert"
+        app:showAsAction="always" />
+
+</menu>

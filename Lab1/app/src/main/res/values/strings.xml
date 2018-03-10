@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Make24</string>
+
+    <string name="hint_text">Input number here!</string>
+    <string name="bt_5">+</string>
+    <string name="bt_6">-</string>
+    <string name="bt_7">*</string>
+    <string name="bt_8">/</string>
+    <string name="bt_9">(</string>
+    <string name="bt_10">)</string>
+    <string name="bt_11">\u003c-</string>
+    <string name="bt_12">Done</string>
+
+    <string name="solution">Show Me</string>
+    <string name="pick">Assign Numbers</string>
+
+    <string name="clear">Clear</string>
+    <string name="fast">Next</string>
+    <string name="move">More</string>
+
+</resources>
