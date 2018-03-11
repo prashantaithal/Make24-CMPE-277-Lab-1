@@ -16,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.Locale;
-import java.util.Stack;
 import java.lang.String;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, NumberPicker.OnValueChangeListener {
@@ -50,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView successTextview;
     private TextView skippedTextview;
     private TextView timerTextview;
-    Thread timer;
 
     static Dialog d ;
 
@@ -79,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         // set item as selected to persist highlight
-                        menuItem.setChecked(true);
+                      //  menuItem.setChecked(true);
                         // close drawer when item is tapped
                         mDrawerLayout.closeDrawers();
 
@@ -95,9 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     builder1.setMessage("Sorry, there are actually no solutions");
                                     resetNumber();
                                     skippedTextview.setText(String.valueOf(++skipCounter));
-                                    timeCounter = 0;
-                                    String timeCountStr = String.format(Locale.US,"%02d:%02d", timeCounter / 100, timeCounter % 100);
-                                    timerTextview.setText(timeCountStr);
+                                    timerSet();
                                 }
                                 builder1.setCancelable(true);
 
@@ -110,15 +106,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         });
                                 AlertDialog soln = builder1.create();
                                 soln.show();
+                                menuItem.setChecked(false);
                                 return true;
                             case R.id.assignNumber:
                                 dialogShow();
                                 equalButton.setEnabled(false);
+                                menuItem.setChecked(false);
                                 return true;
                             default:
                                 mDrawerLayout.closeDrawers();
                         }
-                        menuItem.setChecked(false);
                         return true;
                     }
                 });
@@ -144,9 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ff:
                 resetNumber();
                 skippedTextview.setText(String.valueOf(++skipCounter));
-                timeCounter =0;
-                String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 100, timeCounter % 100);
-                timerTextview.setText(time_count);
+                timerSet();
                 return true;
 
             case R.id.mv:
@@ -167,30 +162,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void initLayout() {
-        oneButton =(Button) findViewById(R.id.num_one);
-        twoButton =(Button) findViewById(R.id.num_two);
-        threeButton =(Button) findViewById(R.id.num_three);
-        fourButton =(Button) findViewById(R.id.num_four);
+        oneButton = findViewById(R.id.num_one);
+        twoButton = findViewById(R.id.num_two);
+        threeButton = findViewById(R.id.num_three);
+        fourButton = findViewById(R.id.num_four);
 
-        addButton =(Button) findViewById(R.id.add);
-        subtractButton =(Button) findViewById(R.id.subtract);
-        multiplyButton =(Button) findViewById(R.id.multiply);
-        divideButton =(Button) findViewById(R.id.divide);
-        leftParenthesisButton =(Button) findViewById(R.id.left_parenthesis);
-        rightParenthesisButton =(Button) findViewById(R.id.right_parenthesis);
-        deleteButton =(Button) findViewById(R.id.delete);
-        equalButton =(Button) findViewById(R.id.equal);
+        addButton = findViewById(R.id.add);
+        subtractButton = findViewById(R.id.subtract);
+        multiplyButton = findViewById(R.id.multiply);
+        divideButton = findViewById(R.id.divide);
+        leftParenthesisButton = findViewById(R.id.left_parenthesis);
+        rightParenthesisButton = findViewById(R.id.right_parenthesis);
+        deleteButton = findViewById(R.id.delete);
+        equalButton = findViewById(R.id.equal);
 
-        attemptTextView =(TextView) findViewById(R.id.attempt_num);
+        attemptTextView = findViewById(R.id.attempt_num);
         attemptTextView.setText(String.valueOf(attemptCounter));
 
-        successTextview =(TextView) findViewById(R.id.succeed_num);
+        successTextview = findViewById(R.id.succeed_num);
         successTextview.setText(String.valueOf(successCounter));
 
-        skippedTextview =(TextView) findViewById(R.id.skipped_num);
+        skippedTextview = findViewById(R.id.skipped_num);
         skippedTextview.setText(String.valueOf(skipCounter));
 
-        timerTextview =(TextView) findViewById(R.id.time_num);
+        timerTextview = findViewById(R.id.time_num);
 
         Thread timerThread=new Thread() {
             @Override
@@ -202,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             public void run() {
                                 timeCounter++;
-                                String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 100, timeCounter % 100);
+                                String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 60, timeCounter % 60);
                                 timerTextview.setText(time_count);
                             }
                         });
@@ -248,9 +243,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     successTextview.setText(String.valueOf(successCounter));
                                     attemptCounter =1;
                                     attemptTextView.setText(String.valueOf(attemptCounter));
-                                    timeCounter = 0;
-                                    String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 100, timeCounter % 100);
-                                    timerTextview.setText(time_count);
+                                    timerSet();
                                 }
                             });
                     AlertDialog alert = builder.create();
@@ -448,9 +441,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 threeButton.setEnabled(true);
                 fourButton.setEnabled(true);
 
-                timeCounter =0;
-                String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 100, timeCounter % 100);
-                timerTextview.setText(time_count);
+                timerSet();
 
                 attemptCounter =1;
                 attemptTextView.setText(String.valueOf(attemptCounter));
@@ -469,4 +460,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         d.show();
     }
 
+    public void timerSet(){
+        timeCounter =0;
+        String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 60, timeCounter % 60);
+        timerTextview.setText(time_count);
+    }
 }
