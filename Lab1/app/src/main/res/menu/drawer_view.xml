@@ -5,12 +5,10 @@
         <item
             android:id="@+id/sol"
             android:icon="@drawable/ic_check"
-            android:iconTint="@android:color/holo_green_dark"
             android:title="@string/solution" />
         <item
             android:id="@+id/assignNumber"
             android:icon="@drawable/ic_apps"
-            android:iconTint="@android:color/holo_purple"
             android:title="@string/pick" />
     </group>
 
