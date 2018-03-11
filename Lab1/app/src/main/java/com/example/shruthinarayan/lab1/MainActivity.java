@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     builder1.setMessage("" + answer);
                                 }
                                 else {
-                                    builder1.setMessage("Sorry, unable to solve.Try another set of numbers.");
+                                    builder1.setMessage("Sorry, there are actually no solutions");
                                 }
                                 builder1.setCancelable(true);
 
