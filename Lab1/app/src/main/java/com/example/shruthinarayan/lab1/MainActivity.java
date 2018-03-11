@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String bt_four = "";
 
     //Count
-    private int succee_count = 0, attempt_count = 0, skip_count = 0, sec = 0;
+    private int succee_count = 0, attempt_count = 1, skip_count = 0, sec = 0;
     private TextView show_attempt;
     private TextView show_succee;
     private TextView show_skipped;
@@ -88,12 +88,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
                                 MakeNumber obj = new MakeNumber();
                                 String answer = obj.getSolution(Integer.parseInt(bt_one),Integer.parseInt(bt_two), Integer.parseInt(bt_three), Integer.parseInt(bt_four));
-                                Log.d("TAG", "ans" + answer);
+                                Log.d("TAG", "ans" + answer+" =24");
                                 if(answer != null) {
-                                    builder1.setMessage("" + answer);
+                                    builder1.setMessage("Solution: " + answer +" =24");
                                 }
                                 else {
                                     builder1.setMessage("Sorry, there are actually no solutions");
+                                    resetNumber();
+                                    show_skipped.setText(String.valueOf(++skip_count));
+                                    sec=0;
+                                    String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
+                                    show_timer.setText(time_count);
                                 }
                                 builder1.setCancelable(true);
 
@@ -109,14 +114,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 return true;
                             case R.id.assignNumber:
                                 dialogShow();
+                                show_skipped.setText(String.valueOf(++skip_count));
+                                equal.setEnabled(false);
                                 return true;
                             default:
                                  mDrawerLayout.closeDrawers();
                         }
-
-
-                        // Add code here to update the UI based on the item selected
-                        // For example, swap UI fragments here
                         return true;
                     }
                 });
@@ -141,6 +144,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.ff:
                 resetNumber();
+                show_skipped.setText(String.valueOf(++skip_count));
+                sec=0;
+                String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
+                show_timer.setText(time_count);
                 return true;
 
             case R.id.mv:
@@ -244,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     resetNumber();
                                     succee_count++;
                                     show_succee.setText(String.valueOf(succee_count));
-                                    attempt_count=0;
+                                    attempt_count=1;
                                     show_attempt.setText(String.valueOf(attempt_count));
                                     sec = 0;
                                     String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
@@ -467,23 +474,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         np1.setMaxValue(9);
         np1.setMinValue(1);
-        np1.setWrapSelectorWheel(false);
+        np1.setWrapSelectorWheel(true);
         np1.setOnValueChangedListener(this);
 
         np2.setMaxValue(9);
         np2.setMinValue(1);
-        np2.setWrapSelectorWheel(false);
+        np2.setWrapSelectorWheel(true);
         np2.setOnValueChangedListener(this);
 
         np3.setMaxValue(9);
         np3.setMinValue(1);
-        np3.setWrapSelectorWheel(false);
+        np3.setWrapSelectorWheel(true);
         np3.setOnValueChangedListener(this);
 
         np4.setMaxValue(9);
         np4.setMinValue(1);
-        np4.setWrapSelectorWheel(false);
+        np4.setWrapSelectorWheel(true);
         np4.setOnValueChangedListener(this);
+
         b1.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -504,6 +512,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 two.setEnabled(true);
                 three.setEnabled(true);
                 four.setEnabled(true);
+
+                sec=0;
+                String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
+                show_timer.setText(time_count);
+
+                attempt_count=1;
+                show_attempt.setText(String.valueOf(attempt_count));
 
                 d.dismiss();
             }
