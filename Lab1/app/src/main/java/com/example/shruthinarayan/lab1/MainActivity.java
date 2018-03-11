@@ -14,8 +14,8 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.view.Menu;
 import android.view.MenuItem;
-import org.mariuszgromada.math.mxparser.*;
 
+import java.util.Locale;
 import java.util.Stack;
 import java.lang.String;
 
@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //Number Generation
     private int[] randArray = new int[4];
-    private int maxValue = 9, minValue = 1;
     private String buttonOneStr = "";
     private String buttonTwoStr = "";
     private String buttonThreeStr = "";
@@ -69,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(toolbar);
         android.support.v7.app.ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
+
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -86,8 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         switch (menuItem.getItemId()) {
                             case R.id.sol:
                                 AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
-                                MakeNumber obj = new MakeNumber();
-                                String answer = obj.getSolution(Integer.parseInt(buttonOneStr),Integer.parseInt(buttonTwoStr), Integer.parseInt(buttonThreeStr), Integer.parseInt(buttonFourStr));
+                                String answer = MakeNumber.getSolution(Integer.parseInt(buttonOneStr),Integer.parseInt(buttonTwoStr), Integer.parseInt(buttonThreeStr), Integer.parseInt(buttonFourStr));
                                 Log.d("TAG", "ans" + answer+" =24");
                                 if(answer != null) {
                                     builder1.setMessage("Solution: " + answer +" =24");
@@ -97,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     resetNumber();
                                     skippedTextview.setText(String.valueOf(++skipCounter));
                                     timeCounter = 0;
-                                    String timeCountStr = String.format("%02d:%02d", timeCounter / 100, timeCounter % 100);
+                                    String timeCountStr = String.format(Locale.US,"%02d:%02d", timeCounter / 100, timeCounter % 100);
                                     timerTextview.setText(timeCountStr);
                                 }
                                 builder1.setCancelable(true);
@@ -114,12 +113,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 return true;
                             case R.id.assignNumber:
                                 dialogShow();
-                                skippedTextview.setText(String.valueOf(++skipCounter));
                                 equalButton.setEnabled(false);
                                 return true;
                             default:
                                 mDrawerLayout.closeDrawers();
                         }
+                        menuItem.setChecked(false);
                         return true;
                     }
                 });
@@ -146,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 resetNumber();
                 skippedTextview.setText(String.valueOf(++skipCounter));
                 timeCounter =0;
-                String time_count = String.format("%02d:%02d", timeCounter / 100, timeCounter % 100);
+                String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 100, timeCounter % 100);
                 timerTextview.setText(time_count);
                 return true;
 
@@ -203,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             public void run() {
                                 timeCounter++;
-                                String time_count = String.format("%02d:%02d", timeCounter / 100, timeCounter % 100);
+                                String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 100, timeCounter % 100);
                                 timerTextview.setText(time_count);
                             }
                         });
@@ -234,7 +233,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 attemptCounter++;
                 attemptTextView.setText(String.valueOf(attemptCounter));
                 equalButton.setEnabled(false);
-                if(check(totalOutput)){
+                ExpressionParsing obj = new ExpressionParsing();
+                if(obj.check(totalOutput)){
                     AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this);
 
                     builder.setMessage("Binggo! "+ totalOutput +"=24")
@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     attemptCounter =1;
                                     attemptTextView.setText(String.valueOf(attemptCounter));
                                     timeCounter = 0;
-                                    String time_count = String.format("%02d:%02d", timeCounter / 100, timeCounter % 100);
+                                    String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 100, timeCounter % 100);
                                     timerTextview.setText(time_count);
                                 }
                             });
@@ -276,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void resetNumber() {
+        int maxValue = 9, minValue = 1;
         randomGenerator(minValue, maxValue);
         buttonOneStr = Integer.toString(randArray[0]);
         buttonTwoStr = Integer.toString(randArray[1]);
@@ -297,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int i = 0;
         while(i<4){
             int temp = (int)(Math.random() * (max - min + 1)) + min;
-            if (temp != randArray[0] && temp != randArray[1] && temp != randArray[1] && temp != randArray[1]){
+            if (temp != randArray[0] && temp != randArray[1] && temp != randArray[2] && temp != randArray[3]){
                 randArray[i] = temp;
                 i++;
             }
@@ -389,17 +390,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return totalOutput;
     }
 
-    public boolean check(String exp){
-        Expression eh = new Expression(exp);
-        Double d  =  eh.calculate();
-        if(d.equals(24.0)) {
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
     @Override
     public void onValueChange(NumberPicker numberPicker, int i, int i1) {
         Log.i("value is",""+i1);
@@ -459,11 +449,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 fourButton.setEnabled(true);
 
                 timeCounter =0;
-                String time_count = String.format("%02d:%02d", timeCounter / 100, timeCounter % 100);
+                String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 100, timeCounter % 100);
                 timerTextview.setText(time_count);
 
                 attemptCounter =1;
                 attemptTextView.setText(String.valueOf(attemptCounter));
+                skippedTextview.setText(String.valueOf(++skipCounter));
 
                 d.dismiss();
             }
