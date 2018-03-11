@@ -4,19 +4,19 @@
 
     <item
         android:id="@+id/clr"
-        android:title="@string/clear"
         android:icon="@drawable/ic_clear"
+        android:title="@string/clear"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/ff"
-        android:title="@string/fast"
         android:icon="@drawable/ic_fast_forward"
+        android:title="@string/fast"
         app:showAsAction="always" />
-
-    <item android:id="@+id/mv"
-        android:title="@string/move"
+    <item
+        android:id="@+id/mv"
         android:icon="@drawable/ic_more_vert"
+        android:title="@string/move"
         app:showAsAction="always" />
 
 </menu>
