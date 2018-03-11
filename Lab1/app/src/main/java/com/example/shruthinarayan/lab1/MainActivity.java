@@ -14,44 +14,41 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.view.Menu;
 import android.view.MenuItem;
-import java.util.Stack;
+
+import java.util.Locale;
 import java.lang.String;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, NumberPicker.OnValueChangeListener {
     //Button
-    private Button one;
-    private Button two;
-    private Button three;
-    private Button four;
+    private Button addButton;
+    private Button subtractButton;
+    private Button multiplyButton;
+    private Button divideButton;
+    private Button leftParenthesisButton;
+    private Button rightParenthesisButton;
+    private Button equalButton;
+    private Button deleteButton;
+    private Button oneButton;
+    private Button twoButton;
+    private Button threeButton;
+    private Button fourButton;
 
-    private Button add;
-    private Button subtract;
-    private Button multiply;
-    private Button divide;
-    private Button left_parenthesis;
-    private Button right_parenthesis;
-    private Button equal;
-    private Button delete;
+    //Number Generation
+    private int[] randArray = new int[4];
+    private String buttonOneStr = "";
+    private String buttonTwoStr = "";
+    private String buttonThreeStr = "";
+    private String buttonFourStr = "";
 
-    //EditText
-    private EditText showtext;
-    private String OperateSum="";
+    private EditText displayText;
+    private String totalOutput ="";
 
-    //Number Gen
-    private int[] numberStore = new int[4];
-    private int max = 9, min = 1;
-    private String bt_one = "";
-    private String bt_two = "";
-    private String bt_three = "";
-    private String bt_four = "";
-
-    //Count
-    private int succee_count = 0, attempt_count = 1, skip_count = 0, sec = 0;
-    private TextView show_attempt;
-    private TextView show_succee;
-    private TextView show_skipped;
-    private TextView show_timer;
-    Thread timer;
+    //Counters
+    private int successCounter = 0, attemptCounter = 1, skipCounter = 0, timeCounter = 0;
+    private TextView attemptTextView;
+    private TextView successTextview;
+    private TextView skippedTextview;
+    private TextView timerTextview;
 
     static Dialog d ;
 
@@ -62,13 +59,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initView();
-        initEvent();
+        initLayout();
+        initAlertEvent();
 
         android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         android.support.v7.app.ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
+
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -79,15 +77,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         // set item as selected to persist highlight
-                        menuItem.setChecked(true);
+                      //  menuItem.setChecked(true);
                         // close drawer when item is tapped
                         mDrawerLayout.closeDrawers();
 
                         switch (menuItem.getItemId()) {
                             case R.id.sol:
                                 AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
-                                MakeNumber obj = new MakeNumber();
-                                String answer = obj.getSolution(Integer.parseInt(bt_one),Integer.parseInt(bt_two), Integer.parseInt(bt_three), Integer.parseInt(bt_four));
+                                String answer = MakeNumber.getSolution(Integer.parseInt(buttonOneStr),Integer.parseInt(buttonTwoStr), Integer.parseInt(buttonThreeStr), Integer.parseInt(buttonFourStr));
                                 Log.d("TAG", "ans" + answer+" =24");
                                 if(answer != null) {
                                     builder1.setMessage("Solution: " + answer +" =24");
@@ -95,10 +92,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 else {
                                     builder1.setMessage("Sorry, there are actually no solutions");
                                     resetNumber();
-                                    show_skipped.setText(String.valueOf(++skip_count));
-                                    sec=0;
-                                    String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
-                                    show_timer.setText(time_count);
+                                    skippedTextview.setText(String.valueOf(++skipCounter));
+                                    timerSet();
                                 }
                                 builder1.setCancelable(true);
 
@@ -109,16 +104,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                 dialog.cancel();
                                             }
                                         });
-                                AlertDialog alert11 = builder1.create();
-                                alert11.show();
+                                AlertDialog soln = builder1.create();
+                                soln.show();
+                                menuItem.setChecked(false);
                                 return true;
                             case R.id.assignNumber:
                                 dialogShow();
-                                show_skipped.setText(String.valueOf(++skip_count));
-                                equal.setEnabled(false);
+                                equalButton.setEnabled(false);
+                                menuItem.setChecked(false);
                                 return true;
                             default:
-                                 mDrawerLayout.closeDrawers();
+                                mDrawerLayout.closeDrawers();
                         }
                         return true;
                     }
@@ -133,21 +129,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return true;
 
             case R.id.clr: {
-                OperateSum="";
-                showtext.setText(OperateSum);
-                one.setEnabled(true);
-                two.setEnabled(true);
-                three.setEnabled(true);
-                four.setEnabled(true);
+                totalOutput ="";
+                displayText.setText(totalOutput);
+                oneButton.setEnabled(true);
+                twoButton.setEnabled(true);
+                threeButton.setEnabled(true);
+                fourButton.setEnabled(true);
                 return true;
             }
 
             case R.id.ff:
                 resetNumber();
-                show_skipped.setText(String.valueOf(++skip_count));
-                sec=0;
-                String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
-                show_timer.setText(time_count);
+                skippedTextview.setText(String.valueOf(++skipCounter));
+                timerSet();
                 return true;
 
             case R.id.mv:
@@ -167,33 +161,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private void initView() {
-        one=(Button) findViewById(R.id.num_one);
-        two=(Button) findViewById(R.id.num_two);
-        three=(Button) findViewById(R.id.num_three);
-        four=(Button) findViewById(R.id.num_four);
+    private void initLayout() {
+        oneButton = findViewById(R.id.num_one);
+        twoButton = findViewById(R.id.num_two);
+        threeButton = findViewById(R.id.num_three);
+        fourButton = findViewById(R.id.num_four);
 
-        add=(Button) findViewById(R.id.add);
-        subtract=(Button) findViewById(R.id.subtract);
-        multiply=(Button) findViewById(R.id.multiply);
-        divide=(Button) findViewById(R.id.divide);
-        left_parenthesis=(Button) findViewById(R.id.left_parenthesis);
-        right_parenthesis=(Button) findViewById(R.id.right_parenthesis);
-        delete=(Button) findViewById(R.id.delete);
-        equal=(Button) findViewById(R.id.equal);
+        addButton = findViewById(R.id.add);
+        subtractButton = findViewById(R.id.subtract);
+        multiplyButton = findViewById(R.id.multiply);
+        divideButton = findViewById(R.id.divide);
+        leftParenthesisButton = findViewById(R.id.left_parenthesis);
+        rightParenthesisButton = findViewById(R.id.right_parenthesis);
+        deleteButton = findViewById(R.id.delete);
+        equalButton = findViewById(R.id.equal);
 
-        show_attempt=(TextView) findViewById(R.id.attempt_num);
-        show_attempt.setText(String.valueOf(attempt_count));
+        attemptTextView = findViewById(R.id.attempt_num);
+        attemptTextView.setText(String.valueOf(attemptCounter));
 
-        show_succee=(TextView) findViewById(R.id.succeed_num);
-        show_succee.setText(String.valueOf(succee_count));
+        successTextview = findViewById(R.id.succeed_num);
+        successTextview.setText(String.valueOf(successCounter));
 
-        show_skipped=(TextView) findViewById(R.id.skipped_num);
-        show_skipped.setText(String.valueOf(skip_count));
+        skippedTextview = findViewById(R.id.skipped_num);
+        skippedTextview.setText(String.valueOf(skipCounter));
 
-        show_timer=(TextView) findViewById(R.id.time_num);
+        timerTextview = findViewById(R.id.time_num);
 
-        Thread timer=new Thread() {
+        Thread timerThread=new Thread() {
             @Override
             public void run() {
                 while(!isInterrupted()){
@@ -202,9 +196,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                sec++;
-                                String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
-                                show_timer.setText(time_count);
+                                timeCounter++;
+                                String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 60, timeCounter % 60);
+                                timerTextview.setText(time_count);
                             }
                         });
                     } catch (InterruptedException e) {
@@ -213,95 +207,93 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         };
-        timer.start();
-        showtext=(EditText) findViewById(R.id.result_text);
-        showtext.setCursorVisible(false);
+        timerThread.start();
+        displayText =(EditText) findViewById(R.id.result_text);
+        displayText.setCursorVisible(false);
     }
 
-    private void initEvent() {
-        one.setOnClickListener(this);
-        two.setOnClickListener(this);
-        three.setOnClickListener(this);
-        four.setOnClickListener(this);
+    private void initAlertEvent() {
+        oneButton.setOnClickListener(this);
+        twoButton.setOnClickListener(this);
+        threeButton.setOnClickListener(this);
+        fourButton.setOnClickListener(this);
 
-        add.setOnClickListener(this);
-        subtract.setOnClickListener(this);
-        multiply.setOnClickListener(this);
-        divide.setOnClickListener(this);
-        equal.setOnClickListener(new View.OnClickListener() {
+        addButton.setOnClickListener(this);
+        subtractButton.setOnClickListener(this);
+        multiplyButton.setOnClickListener(this);
+        divideButton.setOnClickListener(this);
+        equalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attempt_count++;
-                show_attempt.setText(String.valueOf(attempt_count));
-                equal.setEnabled(false);
-                if(!evresult(OperateSum)){
-                   android.support.design.widget.Snackbar.make(view, "Incorrect. Please try again!", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null)
-                           .show();
-                }
-                else {
+                attemptCounter++;
+                attemptTextView.setText(String.valueOf(attemptCounter));
+                equalButton.setEnabled(false);
+                ExpressionParsing obj = new ExpressionParsing();
+                if(obj.check(totalOutput)){
                     AlertDialog.Builder builder= new AlertDialog.Builder(MainActivity.this);
 
-                    builder.setMessage("Binggo! "+OperateSum+"=24")
+                    builder.setMessage("Binggo! "+ totalOutput +"=24")
                             .setPositiveButton("Next Puzzle", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    OperateSum="";
-                                    showtext.setText(OperateSum);
+                                    totalOutput ="";
+                                    displayText.setText(totalOutput);
                                     resetNumber();
-                                    succee_count++;
-                                    show_succee.setText(String.valueOf(succee_count));
-                                    attempt_count=1;
-                                    show_attempt.setText(String.valueOf(attempt_count));
-                                    sec = 0;
-                                    String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
-                                    show_timer.setText(time_count);
+                                    successCounter++;
+                                    successTextview.setText(String.valueOf(successCounter));
+                                    attemptCounter =1;
+                                    attemptTextView.setText(String.valueOf(attemptCounter));
+                                    timerSet();
                                 }
                             });
                     AlertDialog alert = builder.create();
                     alert.show();
                 }
+                else {
+                    android.support.design.widget.Snackbar.make(view, "Incorrect. Please try again!", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null)
+                            .show();
+                }
             }
         });
-        delete.setOnClickListener(this);
-        left_parenthesis.setOnClickListener(this);
-        right_parenthesis.setOnClickListener(this);
+        deleteButton.setOnClickListener(this);
+        leftParenthesisButton.setOnClickListener(this);
+        rightParenthesisButton.setOnClickListener(this);
 
         //about.setOnClickListener(this);
-        showtext.setOnClickListener(this);
-        show_attempt.setOnClickListener(this);
+        displayText.setOnClickListener(this);
+        attemptTextView.setOnClickListener(this);
 
         //generate 4 numbers at start
         resetNumber();
     }
 
     private void resetNumber() {
-        randomGenerator(min,max);
-        bt_one = Integer.toString(numberStore[0]);
-        bt_two = Integer.toString(numberStore[1]);
-        bt_three = Integer.toString(numberStore[2]);
-        bt_four = Integer.toString(numberStore[3]);
+        int maxValue = 9, minValue = 1;
+        randomGenerator(minValue, maxValue);
+        buttonOneStr = Integer.toString(randArray[0]);
+        buttonTwoStr = Integer.toString(randArray[1]);
+        buttonThreeStr = Integer.toString(randArray[2]);
+        buttonFourStr = Integer.toString(randArray[3]);
 
-        one.setText(bt_one);
-        two.setText(bt_two);
-        three.setText(bt_three);
-        four.setText(bt_four);
+        oneButton.setText(buttonOneStr);
+        twoButton.setText(buttonTwoStr);
+        threeButton.setText(buttonThreeStr);
+        fourButton.setText(buttonFourStr);
 
-        one.setEnabled(true);
-        two.setEnabled(true);
-        three.setEnabled(true);
-        four.setEnabled(true);
+        oneButton.setEnabled(true);
+        twoButton.setEnabled(true);
+        threeButton.setEnabled(true);
+        fourButton.setEnabled(true);
     }
 
     private void randomGenerator(int min, int max){
-        int[] map = new int[10];
-        for(int i = 0; i < 4; i++){
-            int temp = (int)(Math.random() * ((max - min) + 1)) + min;
-            if (map[temp] == 0){
-                numberStore[i] = temp;
-                map[temp] = 1;
-            } else {
-                i--;
+        int i = 0;
+        while(i<4){
+            int temp = (int)(Math.random() * (max - min + 1)) + min;
+            if (temp != randArray[0] && temp != randArray[1] && temp != randArray[2] && temp != randArray[3]){
+                randArray[i] = temp;
+                i++;
             }
         }
     }
@@ -310,64 +302,64 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.num_one:
-                OperateSum=AddSum(String.valueOf(bt_one).charAt(0));
-                showtext.setText(OperateSum);
+                totalOutput =AddSum(String.valueOf(buttonOneStr).charAt(0));
+                displayText.setText(totalOutput);
                 break;
             case R.id.num_two:
-                OperateSum=AddSum(String.valueOf(bt_two).charAt(0));
-                showtext.setText(OperateSum);
+                totalOutput =AddSum(String.valueOf(buttonTwoStr).charAt(0));
+                displayText.setText(totalOutput);
                 break;
             case R.id.num_three:
-                OperateSum=AddSum(String.valueOf(bt_three).charAt(0));
-                showtext.setText(OperateSum);
+                totalOutput =AddSum(String.valueOf(buttonThreeStr).charAt(0));
+                displayText.setText(totalOutput);
                 break;
             case R.id.num_four:
-                OperateSum=AddSum(String.valueOf(bt_four).charAt(0));
-                showtext.setText(OperateSum);
+                totalOutput =AddSum(String.valueOf(buttonFourStr).charAt(0));
+                displayText.setText(totalOutput);
                 break;
 
             case R.id.add:
-                OperateSum=AddSum('+');
-                showtext.setText(OperateSum);
+                totalOutput =AddSum('+');
+                displayText.setText(totalOutput);
                 break;
             case R.id.subtract:
-                OperateSum=AddSum('-');
-                showtext.setText(OperateSum);
+                totalOutput =AddSum('-');
+                displayText.setText(totalOutput);
                 break;
             case R.id.multiply:
-                OperateSum=AddSum('*');
-                showtext.setText(OperateSum);
+                totalOutput =AddSum('*');
+                displayText.setText(totalOutput);
                 break;
             case R.id.divide:
-                OperateSum=AddSum('/');
-                showtext.setText(OperateSum);
+                totalOutput =AddSum('/');
+                displayText.setText(totalOutput);
                 break;
             case R.id.left_parenthesis:
-                OperateSum=AddSum('(');
-                showtext.setText(OperateSum);
+                totalOutput =AddSum('(');
+                displayText.setText(totalOutput);
                 break;
             case R.id.right_parenthesis:
-                OperateSum=AddSum(')');
-                showtext.setText(OperateSum);
+                totalOutput =AddSum(')');
+                displayText.setText(totalOutput);
                 break;
             case R.id.delete:
-                if(OperateSum.length()>=1)
+                if(totalOutput.length()>=1)
                 {
-                    char c = OperateSum.charAt(OperateSum.length()-1);
+                    char c = totalOutput.charAt(totalOutput.length()-1);
                     if (Character.isDigit(c)) {
-                        if (one.getText().charAt(0) == c){
-                            one.setEnabled(true);
-                        } else if (two.getText().charAt(0) == c) {
-                            two.setEnabled(true);
-                        } else if (three.getText().charAt(0) == c) {
-                            three.setEnabled(true);
-                        } else if (four.getText().charAt(0) == c) {
-                            four.setEnabled(true);
+                        if (oneButton.getText().charAt(0) == c){
+                            oneButton.setEnabled(true);
+                        } else if (twoButton.getText().charAt(0) == c) {
+                            twoButton.setEnabled(true);
+                        } else if (threeButton.getText().charAt(0) == c) {
+                            threeButton.setEnabled(true);
+                        } else if (fourButton.getText().charAt(0) == c) {
+                            fourButton.setEnabled(true);
                         }
                     }
-                    OperateSum=OperateSum.substring(0,OperateSum.length()-1);
+                    totalOutput = totalOutput.substring(0, totalOutput.length()-1);
                 }
-                showtext.setText(OperateSum);
+                displayText.setText(totalOutput);
             default:
                 break;
         }
@@ -376,83 +368,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public String AddSum(char c)
     {
         if (Character.isDigit(c)){
-            if (one.getText().charAt(0) == c){
-                one.setEnabled(false);
-            } else if (two.getText().charAt(0) == c) {
-                two.setEnabled(false);
-            } else if (three.getText().charAt(0) == c) {
-                three.setEnabled(false);
-            } else if (four.getText().charAt(0) == c) {
-                four.setEnabled(false);
+            if (oneButton.getText().charAt(0) == c){
+                oneButton.setEnabled(false);
+            } else if (twoButton.getText().charAt(0) == c) {
+                twoButton.setEnabled(false);
+            } else if (threeButton.getText().charAt(0) == c) {
+                threeButton.setEnabled(false);
+            } else if (fourButton.getText().charAt(0) == c) {
+                fourButton.setEnabled(false);
             }
         }
-        OperateSum=OperateSum+String.valueOf(c);
-        equal.setEnabled(true);
-        return OperateSum;
-    }
-
-    public int calc(int op2, int op1, char ch) {
-        switch(ch) {
-            case '-': return op1 - op2;
-            case '+': return op1 + op2;
-            case '/': return op1 / op2;
-            case '*': return op1 * op2;
-        }
-        return 0;
-    }
-
-    public boolean higherPriority(char op1, char op2) {
-        if ((op1 =='*') || (op1 =='/')) {
-            return true;
-        }
-
-        if ((op2 =='+') || (op2 =='-')) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean evresult(String exp) {
-        if(exp.length() == 0) {
-            return false;
-        }
-        Stack<Integer> st = new Stack<>();
-        Stack<Character> op = new Stack<>();
-        int digit = 0;
-        boolean hasDigit = false;
-        for (int i = 0; i < exp.length(); i++) {
-            if (Character.isDigit(exp.charAt(i))) {
-                hasDigit = true;
-                digit = digit*10 + (exp.charAt(i) - '0');
-            } else {
-                if(hasDigit) {
-                    hasDigit = false;
-                    st.push(digit);
-                    digit = 0;
-                }
-                if (exp.charAt(i) == '(') {
-                    op.push('(');
-                } else if(exp.charAt(i) == ')') {
-                    while (op.peek() != '(') {
-                        st.push(calc(st.pop(), st.pop(), op.pop()));
-                    }
-                    op.pop();
-
-                } else {
-                    while (!op.isEmpty() && op.peek() != '(' && higherPriority(op.peek(), exp.charAt(i))) {
-                        st.push(calc(st.pop(), st.pop(), op.pop()));
-                    }
-
-                    op.push(exp.charAt(i));
-                }
-            }
-        }
-        if(hasDigit)
-            st.push(digit);
-        while(!op.isEmpty()) {
-            st.push(calc(st.pop(), st.pop(), op.pop()));
-        }
-        return st.peek() == 24;
+        totalOutput = totalOutput +String.valueOf(c);
+        equalButton.setEnabled(true);
+        return totalOutput;
     }
 
     @Override
@@ -496,29 +424,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             @Override
             public void onClick(View v) {
-                bt_one = Integer.toString(np1.getValue());
-                bt_two = Integer.toString(np2.getValue());
-                bt_three = Integer.toString(np3.getValue());
-                bt_four = Integer.toString(np4.getValue());
+                buttonOneStr = Integer.toString(np1.getValue());
+                buttonTwoStr = Integer.toString(np2.getValue());
+                buttonThreeStr = Integer.toString(np3.getValue());
+                buttonFourStr = Integer.toString(np4.getValue());
 
-                one.setText(bt_one);
-                two.setText(bt_two);
-                three.setText(bt_three);
-                four.setText(bt_four);
+                oneButton.setText(buttonOneStr);
+                twoButton.setText(buttonTwoStr);
+                threeButton.setText(buttonThreeStr);
+                fourButton.setText(buttonFourStr);
 
-                OperateSum="";
-                showtext.setText(OperateSum);
-                one.setEnabled(true);
-                two.setEnabled(true);
-                three.setEnabled(true);
-                four.setEnabled(true);
+                totalOutput ="";
+                displayText.setText(totalOutput);
+                oneButton.setEnabled(true);
+                twoButton.setEnabled(true);
+                threeButton.setEnabled(true);
+                fourButton.setEnabled(true);
 
-                sec=0;
-                String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
-                show_timer.setText(time_count);
+                timerSet();
 
-                attempt_count=1;
-                show_attempt.setText(String.valueOf(attempt_count));
+                attemptCounter =1;
+                attemptTextView.setText(String.valueOf(attemptCounter));
+                skippedTextview.setText(String.valueOf(++skipCounter));
 
                 d.dismiss();
             }
@@ -533,4 +460,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         d.show();
     }
 
+    public void timerSet(){
+        timeCounter =0;
+        String time_count = String.format(Locale.US,"%02d:%02d", timeCounter / 60, timeCounter % 60);
+        timerTextview.setText(time_count);
+    }
 }
