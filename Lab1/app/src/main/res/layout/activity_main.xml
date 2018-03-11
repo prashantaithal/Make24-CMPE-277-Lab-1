@@ -3,6 +3,7 @@
 <!-- Use DrawerLayout as root container for activity -->
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,7 +24,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorAccent"
+            android:background="@color/colorAccent"
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:menu="@menu/action"
@@ -48,7 +49,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="Time"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="@android:color/holo_blue_dark"
                     android:textSize="15sp" />
 
                 <TextView
@@ -73,7 +74,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="Attempt"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="@android:color/holo_blue_dark"
                     android:textSize="15sp" />
 
                 <TextView
@@ -104,7 +105,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="Succeeded"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="@android:color/holo_blue_dark"
                     android:textSize="15sp" />
 
                 <TextView
@@ -129,7 +130,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="Skipped"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:textColor="@android:color/holo_blue_dark"
                     android:textSize="15sp" />
 
                 <TextView
@@ -179,7 +180,7 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/textview_border"
+                    android:background="@color/colorPrimary"
                     android:textColor="@android:color/black"
                     android:textSize="20sp" />
 
@@ -190,7 +191,7 @@
                     android:layout_marginLeft="0dp"
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/textview_border"
+                    android:background="@color/colorPrimary"
                     android:textColor="@android:color/black"
                     android:textSize="20sp" />
 
@@ -201,7 +202,7 @@
                     android:layout_marginLeft="0dp"
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/textview_border"
+                    android:background="@color/colorPrimary"
                     android:textColor="@android:color/black"
                     android:textSize="20sp" />
 
@@ -212,7 +213,7 @@
                     android:layout_marginLeft="0dp"
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/textview_border"
+                    android:background="@color/colorPrimary"
                     android:textColor="@android:color/black"
                     android:textSize="20sp" />
             </TableRow>
