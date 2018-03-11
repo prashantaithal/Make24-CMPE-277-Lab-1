@@ -14,6 +14,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import java.util.Stack;
 import java.lang.String;
 
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String OperateSum="";
 
     //Number Gen
-    private int[] numberStore = new int[4];
+    private int[] randArray = new int[4];
     private int max = 9, min = 1;
     private String bt_one = "";
     private String bt_two = "";
@@ -47,10 +48,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //Count
     private int succee_count = 0, attempt_count = 1, skip_count = 0, sec = 0;
-    private TextView show_attempt;
-    private TextView show_succee;
-    private TextView show_skipped;
-    private TextView show_timer;
+    private TextView attemptTextView;
+    private TextView successTextview;
+    private TextView skippedTextview;
+    private TextView timerTextview;
     Thread timer;
 
     static Dialog d ;
@@ -95,10 +96,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 else {
                                     builder1.setMessage("Sorry, there are actually no solutions");
                                     resetNumber();
-                                    show_skipped.setText(String.valueOf(++skip_count));
+                                    skippedTextview.setText(String.valueOf(++skip_count));
                                     sec=0;
                                     String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
-                                    show_timer.setText(time_count);
+                                    timerTextview.setText(time_count);
                                 }
                                 builder1.setCancelable(true);
 
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 return true;
                             case R.id.assignNumber:
                                 dialogShow();
-                                show_skipped.setText(String.valueOf(++skip_count));
+                                skippedTextview.setText(String.valueOf(++skip_count));
                                 equal.setEnabled(false);
                                 return true;
                             default:
@@ -144,10 +145,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.ff:
                 resetNumber();
-                show_skipped.setText(String.valueOf(++skip_count));
+                skippedTextview.setText(String.valueOf(++skip_count));
                 sec=0;
                 String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
-                show_timer.setText(time_count);
+                timerTextview.setText(time_count);
                 return true;
 
             case R.id.mv:
@@ -182,16 +183,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         delete=(Button) findViewById(R.id.delete);
         equal=(Button) findViewById(R.id.equal);
 
-        show_attempt=(TextView) findViewById(R.id.attempt_num);
-        show_attempt.setText(String.valueOf(attempt_count));
+        attemptTextView =(TextView) findViewById(R.id.attempt_num);
+        attemptTextView.setText(String.valueOf(attempt_count));
 
-        show_succee=(TextView) findViewById(R.id.succeed_num);
-        show_succee.setText(String.valueOf(succee_count));
+        successTextview =(TextView) findViewById(R.id.succeed_num);
+        successTextview.setText(String.valueOf(succee_count));
 
-        show_skipped=(TextView) findViewById(R.id.skipped_num);
-        show_skipped.setText(String.valueOf(skip_count));
+        skippedTextview =(TextView) findViewById(R.id.skipped_num);
+        skippedTextview.setText(String.valueOf(skip_count));
 
-        show_timer=(TextView) findViewById(R.id.time_num);
+        timerTextview =(TextView) findViewById(R.id.time_num);
 
         Thread timer=new Thread() {
             @Override
@@ -204,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             public void run() {
                                 sec++;
                                 String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
-                                show_timer.setText(time_count);
+                                timerTextview.setText(time_count);
                             }
                         });
                     } catch (InterruptedException e) {
@@ -232,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View view) {
                 attempt_count++;
-                show_attempt.setText(String.valueOf(attempt_count));
+                attemptTextView.setText(String.valueOf(attempt_count));
                 equal.setEnabled(false);
                 if(!evresult(OperateSum)){
                    android.support.design.widget.Snackbar.make(view, "Incorrect. Please try again!", Snackbar.LENGTH_LONG)
@@ -250,12 +251,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     showtext.setText(OperateSum);
                                     resetNumber();
                                     succee_count++;
-                                    show_succee.setText(String.valueOf(succee_count));
+                                    successTextview.setText(String.valueOf(succee_count));
                                     attempt_count=1;
-                                    show_attempt.setText(String.valueOf(attempt_count));
+                                    attemptTextView.setText(String.valueOf(attempt_count));
                                     sec = 0;
                                     String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
-                                    show_timer.setText(time_count);
+                                    timerTextview.setText(time_count);
                                 }
                             });
                     AlertDialog alert = builder.create();
@@ -269,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //about.setOnClickListener(this);
         showtext.setOnClickListener(this);
-        show_attempt.setOnClickListener(this);
+        attemptTextView.setOnClickListener(this);
 
         //generate 4 numbers at start
         resetNumber();
@@ -277,10 +278,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void resetNumber() {
         randomGenerator(min,max);
-        bt_one = Integer.toString(numberStore[0]);
-        bt_two = Integer.toString(numberStore[1]);
-        bt_three = Integer.toString(numberStore[2]);
-        bt_four = Integer.toString(numberStore[3]);
+        bt_one = Integer.toString(randArray[0]);
+        bt_two = Integer.toString(randArray[1]);
+        bt_three = Integer.toString(randArray[2]);
+        bt_four = Integer.toString(randArray[3]);
 
         one.setText(bt_one);
         two.setText(bt_two);
@@ -294,14 +295,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void randomGenerator(int min, int max){
-        int[] map = new int[10];
-        for(int i = 0; i < 4; i++){
-            int temp = (int)(Math.random() * ((max - min) + 1)) + min;
-            if (map[temp] == 0){
-                numberStore[i] = temp;
-                map[temp] = 1;
-            } else {
-                i--;
+        int i = 0;
+        while(i<4){
+            int temp = (int)(Math.random() * (max - min + 1)) + min;
+            if (temp != randArray[0] && temp != randArray[1] && temp != randArray[1] && temp != randArray[1]){
+                randArray[i] = temp;
+                i++;
             }
         }
     }
@@ -515,10 +514,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 sec=0;
                 String time_count = String.format("%02d:%02d", sec / 100, sec % 100);
-                show_timer.setText(time_count);
+                timerTextview.setText(time_count);
 
                 attempt_count=1;
-                show_attempt.setText(String.valueOf(attempt_count));
+                attemptTextView.setText(String.valueOf(attempt_count));
 
                 d.dismiss();
             }
