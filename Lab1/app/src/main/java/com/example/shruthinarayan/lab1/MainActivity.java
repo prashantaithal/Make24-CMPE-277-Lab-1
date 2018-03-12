@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         // set item as selected to persist highlight
-                      //  menuItem.setChecked(true);
+                        //menuItem.setChecked(true);
                         // close drawer when item is tapped
                         mDrawerLayout.closeDrawers();
 
@@ -106,12 +106,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         });
                                 AlertDialog soln = builder1.create();
                                 soln.show();
-                                menuItem.setChecked(false);
+                               // menuItem.setChecked(true);
                                 return true;
                             case R.id.assignNumber:
                                 dialogShow();
                                 equalButton.setEnabled(false);
-                                menuItem.setChecked(false);
+                               // menuItem.setChecked(true);
                                 return true;
                             default:
                                 mDrawerLayout.closeDrawers();

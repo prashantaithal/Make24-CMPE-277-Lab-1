@@ -4,6 +4,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/sol"
+            android:enabled="true"
             android:icon="@drawable/ic_check"
             android:title="@string/solution" />
         <item
