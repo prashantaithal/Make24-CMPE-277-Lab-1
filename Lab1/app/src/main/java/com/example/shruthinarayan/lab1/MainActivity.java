@@ -140,6 +140,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.ff:
                 resetNumber();
+                totalOutput ="";
+                displayText.setText(totalOutput);
                 skippedTextview.setText(String.valueOf(++skipCounter));
                 timerSet();
                 return true;
